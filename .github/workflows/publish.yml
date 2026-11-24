@@ -229,13 +229,16 @@ jobs:
       # The releases repo has redeployment enabled, so a plain retry after a
       # mid-upload failure is safe (no GitHub-Packages-style 409 poisoning).
       - name: Publish to maven.bitsycore.com
-        if: ${{ secrets.BITSYCORE_MAVEN_USER != '' && secrets.BITSYCORE_MAVEN_TOKEN != '' }}
         shell: bash
         env:
           BITSYCORE_MAVEN_USER: ${{ secrets.BITSYCORE_MAVEN_USER }}
           BITSYCORE_MAVEN_TOKEN: ${{ secrets.BITSYCORE_MAVEN_TOKEN }}
         run: |
           set -e
+          if [ -z "$BITSYCORE_MAVEN_USER" ] || [ -z "$BITSYCORE_MAVEN_TOKEN" ]; then
+            echo "BITSYCORE_MAVEN credentials missing; skipping Reposilite publish."
+            exit 0
+          fi
           BITSY_TASKS=$(echo "${{ matrix.tasks }}" | sed 's/GitHubPackagesRepository/BitsycoreRepository/g')
           for attempt in 1 2 3; do
             echo "::group::Bitsycore publish attempt $attempt"
