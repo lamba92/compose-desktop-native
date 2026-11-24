@@ -229,6 +229,7 @@ jobs:
       # The releases repo has redeployment enabled, so a plain retry after a
       # mid-upload failure is safe (no GitHub-Packages-style 409 poisoning).
       - name: Publish to maven.bitsycore.com
+        if: ${{ secrets.BITSYCORE_MAVEN_USER != '' && secrets.BITSYCORE_MAVEN_TOKEN != '' }}
         shell: bash
         env:
           BITSYCORE_MAVEN_USER: ${{ secrets.BITSYCORE_MAVEN_USER }}
